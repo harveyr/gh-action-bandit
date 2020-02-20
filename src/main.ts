@@ -139,9 +139,12 @@ async function run(): Promise<void> {
   }
   args = args.concat(paths)
 
-  const { stdout } = await kit.execAndCapture(banditPath, args, {
-    failOnStdErr: true,
+  const { stdout, stderr } = await kit.execAndCapture(banditPath, args, {
+    failOnStdErr: false,
   })
+
+  console.log('STDOUT', stdout)
+  console.log('STDOUT', stderr)
 
   let report: Report | undefined
   try {
