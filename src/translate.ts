@@ -8,8 +8,7 @@ interface GetAnnotationArg {
 }
 
 export function getAnnotationLevel(arg: GetAnnotationArg): kit.AnnotationLevel {
-  const { levels, issue } = arg
-  const level = findParsedLevelForIssue(levels, issue)
+  const level = findParsedLevelForIssue(arg)
   return level?.annotationLevel || 'warning'
 }
 
