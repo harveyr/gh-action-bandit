@@ -70,13 +70,14 @@ export function getConclusion(issueCounts: IssueCounts): Conclusion {
 
 export function getAnnotation(issue: Issue): kit.CheckRunAnnotation {
   const level = getAnnotationLevel(issue)
+  const moreInfoLink = `[${issue.more_info}](${issue.more_info})`
   const message =
     [
       `ID: ${issue.test_id}`,
       `Name: ${issue.test_name}`,
       `Severity: ${issue.issue_severity}`,
       `Confidence: ${issue.issue_confidence}`,
-    ].join(' | ') + `\n${issue.more_info}`
+    ].join(' | ') + `\n${moreInfoLink}`
 
   return {
     level,
