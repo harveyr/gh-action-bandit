@@ -1,75 +1,51 @@
-import { Conclusion, Issue, IssueCounts } from './types'
+import { Conclusion, Issue, ParsedLevelToken } from './types'
 import * as kit from '@harveyr/github-actions-kit'
+import { findParsedLevelForIssue } from './levels'
 
-export function getAnnotationLevel(issue: Issue): kit.AnnotationLevel {
-  const { issue_severity, issue_confidence } = issue
-  if (issue_severity === 'HIGH') {
-    if (issue_confidence === 'HIGH' || issue_confidence === 'MEDIUM') {
-      return 'failure'
-    }
-    return 'warning'
-  }
-  if (issue_severity === 'MEDIUM') {
-    if (issue_confidence === 'HIGH') {
-      return 'failure'
-    }
-    return 'warning'
-  }
-
-  // The low-severity issues I've seen are more of "FYI"-style notices than
-  // danger warnings. Leaving them as "notice" for now.
-
-  // Catch-all
-  return 'notice'
+interface GetAnnotationArg {
+  issue: Issue
+  levels: ParsedLevelToken[]
 }
-export function getConclusion(issueCounts: IssueCounts): Conclusion {
-  const high = issueCounts.get('HIGH')
-  // Fail on any high-severity issues.
-  if (high?.get('HIGH') || high?.get('MEDIUM') || high?.get('LOW')) {
+
+export function getAnnotationLevel(arg: GetAnnotationArg): kit.AnnotationLevel {
+  const level = findParsedLevelForIssue(arg)
+  return level?.annotationLevel || 'warning'
+}
+
+export function getConclusion(
+  annotations: kit.CheckRunAnnotation[],
+): Conclusion {
+  const levels: Set<kit.AnnotationLevel> = new Set()
+  annotations.forEach(a => {
+    levels.add(a.level)
+  })
+  if (levels.has('failure')) {
     return {
       conclusion: 'failure',
-      summary: 'Bandit reported high-severity issues',
+      summary: 'At least one annotation has the "failure" level',
     }
   }
-
-  const medium = issueCounts.get('MEDIUM')
-  if (medium?.get('HIGH') || medium?.get('MEDIUM')) {
+  if (levels.has('warning')) {
     return {
       conclusion: 'neutral',
-      summary:
-        'Bandit reported medium-severity issues with high or medium confidence',
-    }
-  }
-  if (medium?.get('LOW')) {
-    return {
-      conclusion: 'neutral',
-      summary: 'Bandit reported medium-severity issues with low confidence',
-    }
-  }
-
-  const low = issueCounts.get('LOW')
-  if (low?.get('HIGH') || low?.get('MEDIUM')) {
-    return {
-      conclusion: 'neutral',
-      summary:
-        'Bandit reported low-severity issues with high or medium confidence',
-    }
-  }
-  if (low?.get('LOW')) {
-    return {
-      conclusion: 'success',
-      summary: 'Bandit reported low-severity issues with low confidence',
+      summary: 'At least one annotation has the "warning" level',
     }
   }
 
   return {
     conclusion: 'success',
-    summary: 'Bandit reported nothing scary',
+    summary: 'All issues are below the "warning" level',
   }
 }
 
-export function getAnnotation(issue: Issue): kit.CheckRunAnnotation {
-  const level = getAnnotationLevel(issue)
+interface GetAnnotationArg {
+  issue: Issue
+  levels: ParsedLevelToken[]
+}
+
+export function getAnnotation(arg: GetAnnotationArg): kit.CheckRunAnnotation {
+  const { issue } = arg
+  const level = getAnnotationLevel(arg)
   const message =
     [
       `ID: ${issue.test_id}`,
