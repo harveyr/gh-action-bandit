@@ -1,8 +1,8 @@
 {
-  "name": "replace-me",
+  "name": "@harveyr/gh-action-bandit",
   "version": "0.0.0",
   "private": true,
-  "description": "FIXME: REPLACE ME",
+  "description": "Github Action for the Python Bandit tool",
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/fixme:replace.git"
+    "url": "git+https://github.com/harveyr/gh-action-bandit.git"
   },
   "author": "Harvey Rogers (harveyr@gmail.com)",
   "license": "MIT",
