@@ -1,3 +1,5 @@
+import { CheckRunConclusion } from '@harveyr/github-actions-kit'
+
 export type Level = 'LOW' | 'MEDIUM' | 'HIGH'
 
 export const LEVELS: Level[] = ['LOW', 'MEDIUM', 'HIGH']
@@ -38,4 +40,9 @@ export interface Issue {
   more_info: string
   test_id: string
   test_name: string
+}
+
+export interface Conclusion {
+  conclusion: CheckRunConclusion
+  summary: string
 }
