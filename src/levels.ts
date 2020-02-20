@@ -8,7 +8,7 @@ import {
 const BANDIT_LEVEL_DELIMITER = '-'
 const ANNOTATION_LEVEL_DELIMITER = '|'
 
-function parseToken(token: string): ParsedLevelToken {
+export function parseToken(token: string): ParsedLevelToken {
   const errMessage = `Invalid level token: ${token}`
 
   const parts = token.split(ANNOTATION_LEVEL_DELIMITER)
@@ -47,10 +47,15 @@ function getBanditTokenPrefix(issue: Issue): string {
   )
 }
 
+interface FindParsedLevelForIssueArg {
+  levels: ParsedLevelToken[]
+  issue: Issue
+}
+
 export function findParsedLevelForIssue(
-  levels: ParsedLevelToken[],
-  issue: Issue,
+  arg: FindParsedLevelForIssueArg,
 ): ParsedLevelToken | undefined {
+  const { issue, levels } = arg
   const prefix = getBanditTokenPrefix(issue)
   return levels.find(level => {
     return level.token.indexOf(prefix) === 0
