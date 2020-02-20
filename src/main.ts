@@ -10,7 +10,6 @@ async function run(): Promise<void> {
   const levels = processLevelInput(
     kit.getInputSafe('annotation-levels', { required: true }),
   )
-  console.log('FIXME: levels', JSON.stringify(levels))
 
   if (!paths.length) {
     core.warning('No paths provided. Not running Bandit.')

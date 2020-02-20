@@ -22,13 +22,13 @@ export function getConclusion(
   if (levels.has('failure')) {
     return {
       conclusion: 'failure',
-      summary: 'One or more annotations has the "failure" level',
+      summary: 'At least one annotation has the "failure" level',
     }
   }
   if (levels.has('warning')) {
     return {
       conclusion: 'neutral',
-      summary: 'One or more annotations has the "warning" level',
+      summary: 'At least one annotation has the "warning" level',
     }
   }
 
