@@ -143,27 +143,27 @@ async function run(): Promise<void> {
     failOnStdErr: false,
   })
 
-  console.log('STDOUT', stdout)
-  console.log('STDOUT', stderr)
-
   let report: Report | undefined
   try {
-    report = JSON.parse(stdout)
+    report = JSON.parse(stdout + stderr)
   } catch (err) {
     console.error(`Failed to parse output: ${stdout}`)
     core.setFailed('Failed to parse output')
     return
   }
 
-  const issues = report?.results
-  if (issues && githubToken) {
+  const issues = report?.results || []
+  if (issues.length && githubToken) {
     await postAnnotations({ githubToken, issues })
   }
 
-  const errors = report?.errors
-  if (errors) {
+  const errors = report?.errors || []
+  if (errors.length) {
     console.error(`Bandit reported errors: ${JSON.stringify(errors)}`)
     core.setFailed(`Bandit reported errors`)
+  }
+  if (issues.length) {
+    core.setFailed(`Bandit reported ${issues.length} issues`)
   }
 }
 
