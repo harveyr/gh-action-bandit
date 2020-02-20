@@ -108,7 +108,7 @@ async function postAnnotations(arg: PostAnnotationsArg): Promise<void> {
     }
   })
 
-  kit.postCheckRun({
+  await kit.postCheckRun({
     githubToken,
     name: 'Bandit',
     conclusion,
@@ -153,8 +153,12 @@ async function run(): Promise<void> {
   }
 
   const issues = report?.results || []
-  if (issues.length && githubToken) {
-    await postAnnotations({ githubToken, issues })
+  if (issues.length) {
+    if (githubToken) {
+      await postAnnotations({ githubToken, issues })
+    } else {
+      core.warning('Not posting annotations because no GitHub token provided')
+    }
   }
 
   const errors = report?.errors || []
