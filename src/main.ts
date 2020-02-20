@@ -42,15 +42,11 @@ async function postAnnotations(arg: PostAnnotationsArg): Promise<void> {
 }
 
 async function run(): Promise<void> {
-  const paths = kit
-    .getInputSafe('paths', { required: true })
-    .split(' ')
-    .filter(path => {
-      return path.trim()
-    })
-    .filter(path => {
-      return Boolean(path)
-    })
+  const paths = kit.tokenize(kit.getInputSafe('paths', { required: true }))
+  if (!paths.length) {
+    core.warning('No paths provided. Not running Bandit.')
+    return
+  }
 
   const banditPath = kit.getInputSafe('bandit-path', { required: true })
   const configFile = kit.getInputSafe('config-file', { required: false })
