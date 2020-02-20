@@ -7,7 +7,7 @@ inputs:
     required: true
   config-file:
     description: bandit config file
-    default: bandit.yml
+    required: false
   bandit-path:
     description: path to bandit executable
     default: bandit

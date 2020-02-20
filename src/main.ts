@@ -130,10 +130,14 @@ async function run(): Promise<void> {
     })
 
   const banditPath = kit.getInputSafe('bandit-path', { required: true })
-  const configFile = kit.getInputSafe('config-file', { required: true })
+  const configFile = kit.getInputSafe('config-file', { required: false })
   const githubToken = kit.getInputSafe('config-file', { required: false })
 
-  const args = ['-c', configFile, '--quiet', '--format', 'json'].concat(paths)
+  let args = ['--quiet', '--format', 'json']
+  if (configFile) {
+    args = args.concat(['-c', configFile])
+  }
+  args = args.concat(paths)
 
   const { stdout } = await kit.execAndCapture(banditPath, args, {
     failOnStdErr: true,
