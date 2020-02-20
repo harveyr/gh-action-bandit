@@ -3,6 +3,7 @@ import * as kit from '@harveyr/github-actions-kit'
 import { countIssues, runBandit } from './bandit'
 import { getAnnotation, getConclusion } from './translate'
 import { Issue } from './types'
+import { codeBlock } from './markdown'
 
 interface PostAnnotationsArg {
   command: string
@@ -20,8 +21,9 @@ async function postAnnotations(arg: PostAnnotationsArg): Promise<void> {
 
   const summary = [
     conclusionSummary,
+    '\n',
     'Ran command:',
-    '```' + command + '```',
+    codeBlock(command),
   ].join('\n')
 
   console.log(
@@ -35,7 +37,7 @@ async function postAnnotations(arg: PostAnnotationsArg): Promise<void> {
     conclusion,
     summary,
     annotations,
-    text: '```' + text + '````',
+    text: codeBlock(text),
   })
 }
 
@@ -74,7 +76,7 @@ async function run(): Promise<void> {
         githubToken,
         command,
         issues,
-        text: result.stderr + result.stdout,
+        text: result.stderr + JSON.stringify(issues, null, 2),
       })
     } else {
       core.warning('Not posting annotations because no GitHub token provided')
