@@ -5,17 +5,24 @@ import { getAnnotation, getConclusion } from './translate'
 import { Issue } from './types'
 
 interface PostAnnotationsArg {
-  issues: Issue[]
+  command: string
   text: string
+  issues: Issue[]
   githubToken: string
 }
 
 async function postAnnotations(arg: PostAnnotationsArg): Promise<void> {
-  const { githubToken, issues, text } = arg
+  const { githubToken, command, text, issues } = arg
 
   const counts = countIssues(issues)
-  const { conclusion, summary } = getConclusion(counts)
+  const { conclusion, summary: conclusionSummary } = getConclusion(counts)
   const annotations: kit.CheckRunAnnotation[] = issues.map(getAnnotation)
+
+  const summary = [
+    conclusionSummary,
+    'Ran command:',
+    '```' + command + '```',
+  ].join('\n')
 
   console.log(
     'Posting %s annotations with conclusion "%s"',
@@ -50,10 +57,9 @@ async function run(): Promise<void> {
   const result = await runBandit({
     banditPath,
     paths,
-    format: 'yaml',
     configFile,
   })
-  const { report } = result
+  const { command, report } = result
 
   const errors = report?.errors || []
   if (errors.length) {
@@ -66,6 +72,7 @@ async function run(): Promise<void> {
     if (githubToken) {
       await postAnnotations({
         githubToken,
+        command,
         issues,
         text: result.stderr + result.stdout,
       })

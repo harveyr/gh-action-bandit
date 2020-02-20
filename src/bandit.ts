@@ -1,29 +1,22 @@
 import * as kit from '@harveyr/github-actions-kit'
 import { Issue, IssueCounts, Level, Report, LEVELS } from './types'
-import * as yaml from 'js-yaml'
 
 interface RunArg {
   banditPath: string
   paths: string[]
-  format: 'csv' | 'html' | 'json' | 'screen' | 'txt' | 'xml' | 'yaml'
   configFile?: string
 }
 
 interface RunResult {
+  command: string
   stdout: string
   stderr: string
-  report?: Report
+  report: Report
 }
 
 export async function runBandit(arg: RunArg): Promise<RunResult> {
-  const { banditPath, paths, configFile, format } = arg
-  const isJson = format === 'json'
-  const isYaml = format === 'yaml'
-
-  let args = ['--format', format]
-  if (isJson || isYaml) {
-    args.push('--quiet')
-  }
+  const { banditPath, paths, configFile } = arg
+  let args = ['--format', 'json', '--quiet']
   if (configFile) {
     args = args.concat(['-c', configFile])
   }
@@ -34,26 +27,21 @@ export async function runBandit(arg: RunArg): Promise<RunResult> {
   })
 
   let report: Report | undefined
-  if (isJson) {
-    try {
-      report = JSON.parse(stdout)
-    } catch (err) {
-      console.error(`Failed to parse output: ${stdout}`)
-      throw err
-    }
-  } else if (isYaml) {
-    try {
-      report = yaml.load(stdout)
-    } catch (err) {
-      console.error(`Failed to parse output: ${stdout}`)
-      throw err
-    }
+  try {
+    report = JSON.parse(stdout)
+  } catch (err) {
+    console.error(`Failed to parse output: ${stdout}`)
+    throw err
+  }
+  if (!report) {
+    throw new Error('Failed to get report')
   }
 
   return {
     stdout,
     stderr,
     report,
+    command: [banditPath].concat(args).join(' '),
   }
 }
 
