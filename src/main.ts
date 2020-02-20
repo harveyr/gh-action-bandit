@@ -28,7 +28,7 @@ async function postAnnotations(arg: PostAnnotationsArg): Promise<void> {
     conclusion,
     summary,
     annotations,
-    text,
+    text: '```' + text + '````',
   })
 }
 
