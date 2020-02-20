@@ -37,6 +37,7 @@ jobs:
         with:
           paths: __tests__/assets/guinea_pig.py
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          annotation-levels:
         continue-on-error: true
 
       - uses: harveyr/gh-action-publish@releases/v0

@@ -22,7 +22,7 @@ inputs:
       HIGH-HIGH|failure
       HIGH-MEDIUM|failure
       HIGH-LOW|warning
-      MEDIUM-HIGH|failure
+      MEDIUM-HIGH|warning
       MEDIUM-MEDIUM|warning
       MEDIUM-LOW|notice
       LOW-HIGH|notice
