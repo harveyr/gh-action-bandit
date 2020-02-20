@@ -1,12 +1,12 @@
 export type Level = 'LOW' | 'MEDIUM' | 'HIGH'
 
-export const LEVELS: Level[] = ['LOW', 'MEDIUM', "HIGH"]
+export const LEVELS: Level[] = ['LOW', 'MEDIUM', 'HIGH']
 
 export type IssueCounts = Map<Level, Map<Level, number>>
 
 export interface Report {
-  errors: [],
-  generated_at: string,
+  errors: []
+  generated_at: string
   metrics: {
     _totals: Metrics
     [filename: string]: Metrics
@@ -15,15 +15,15 @@ export interface Report {
 }
 
 interface Metrics {
-  "CONFIDENCE.HIGH": number,
-  "CONFIDENCE.LOW": number,
-  "CONFIDENCE.MEDIUM": number,
-  "CONFIDENCE.UNDEFINED": number,
-  "SEVERITY.HIGH": number,
-  "SEVERITY.LOW": number,
-  "SEVERITY.MEDIUM": number,
-  "SEVERITY.UNDEFINED": number,
-  loc: number,
+  'CONFIDENCE.HIGH': number
+  'CONFIDENCE.LOW': number
+  'CONFIDENCE.MEDIUM': number
+  'CONFIDENCE.UNDEFINED': number
+  'SEVERITY.HIGH': number
+  'SEVERITY.LOW': number
+  'SEVERITY.MEDIUM': number
+  'SEVERITY.UNDEFINED': number
+  loc: number
   nosec: number
 }
 
