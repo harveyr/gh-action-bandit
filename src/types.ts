@@ -1,10 +1,11 @@
-import { CheckRunConclusion } from '@harveyr/github-actions-kit'
+import {
+  AnnotationLevel,
+  CheckRunConclusion,
+} from '@harveyr/github-actions-kit'
 
 export type Level = 'LOW' | 'MEDIUM' | 'HIGH'
 
 export const LEVELS: Level[] = ['LOW', 'MEDIUM', 'HIGH']
-
-export type IssueCounts = Map<Level, Map<Level, number>>
 
 export interface Report {
   errors: []
@@ -45,4 +46,11 @@ export interface Issue {
 export interface Conclusion {
   conclusion: CheckRunConclusion
   summary: string
+}
+
+export interface ParsedLevelToken {
+  severity: Level
+  confidence: Level
+  annotationLevel: AnnotationLevel
+  token: string
 }
