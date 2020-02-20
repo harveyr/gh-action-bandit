@@ -1,4 +1,5 @@
 [![Total alerts](https://img.shields.io/lgtm/alerts/g/harveyr/gh-action-bandit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/harveyr/gh-action-bandit/alerts/)
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/harveyr/gh-action-bandit.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/harveyr/gh-action-bandit/context:javascript)
 
 # gh-action-bandit
 
