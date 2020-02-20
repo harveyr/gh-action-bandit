@@ -1,3 +1,4 @@
-A modified version of https://github.com/actions/typescript-action
+# gh-action-bandit
 
-FIXME: Update this readme when you instantiate this repo template.
+A GitHub action to report [Bandit](https://pypi.org/project/bandit/) issues into
+GitHub check runs with annotations.
