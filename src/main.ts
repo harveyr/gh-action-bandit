@@ -4,6 +4,7 @@ import { countIssues, runBandit } from './bandit'
 import { getAnnotation, getConclusion } from './translate'
 import { Issue } from './types'
 import { codeBlock } from './markdown'
+import { processLevelInput } from './levels'
 
 interface PostAnnotationsArg {
   command: string
@@ -43,6 +44,11 @@ async function postAnnotations(arg: PostAnnotationsArg): Promise<void> {
 
 async function run(): Promise<void> {
   const paths = kit.tokenize(kit.getInputSafe('paths', { required: true }))
+  const levels = processLevelInput(
+    kit.getInputSafe('annotation-levels', { required: true }),
+  )
+  console.log('levels', levels)
+
   if (!paths.length) {
     core.warning('No paths provided. Not running Bandit.')
     return
