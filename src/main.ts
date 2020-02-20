@@ -21,7 +21,7 @@ function getConclusion(issueCounts: IssueCounts): Conclusion {
   const medium = issueCounts.get('MEDIUM')
   if (medium?.get('HIGH') || medium?.get('MEDIUM')) {
     return {
-      conclusion: 'failure',
+      conclusion: 'neutral',
       summary:
         'Bandit reported medium-severity issues with high or medium confidence',
     }
@@ -139,7 +139,7 @@ async function run(): Promise<void> {
   const result = await runBandit({
     banditPath,
     paths,
-    format: 'json',
+    format: 'yaml',
     configFile,
   })
   const { report } = result
@@ -153,18 +153,10 @@ async function run(): Promise<void> {
   const issues = report?.results || []
   if (issues.length) {
     if (githubToken) {
-      // Run it again with a more human-readable format. TODO: consider just
-      // using yaml instead of json.
-      const txtResult = await runBandit({
-        banditPath,
-        paths,
-        format: 'txt',
-        configFile,
-      })
       await postAnnotations({
         githubToken,
         issues,
-        text: txtResult.stderr + txtResult.stdout,
+        text: result.stderr + result.stdout,
       })
     } else {
       core.warning('Not posting annotations because no GitHub token provided')

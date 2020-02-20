@@ -1,5 +1,6 @@
 import * as kit from '@harveyr/github-actions-kit'
 import { Issue, IssueCounts, Level, Report, LEVELS } from './types'
+import * as yaml from 'js-yaml'
 
 interface RunArg {
   banditPath: string
@@ -17,9 +18,10 @@ interface RunResult {
 export async function runBandit(arg: RunArg): Promise<RunResult> {
   const { banditPath, paths, configFile, format } = arg
   const isJson = format === 'json'
+  const isYaml = format === 'yaml'
 
   let args = ['--format', format]
-  if (isJson) {
+  if (isJson || isYaml) {
     args.push('--quiet')
   }
   if (configFile) {
@@ -35,6 +37,13 @@ export async function runBandit(arg: RunArg): Promise<RunResult> {
   if (isJson) {
     try {
       report = JSON.parse(stdout)
+    } catch (err) {
+      console.error(`Failed to parse output: ${stdout}`)
+      throw err
+    }
+  } else if (isYaml) {
+    try {
+      report = yaml.load(stdout)
     } catch (err) {
       console.error(`Failed to parse output: ${stdout}`)
       throw err
