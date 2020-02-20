@@ -31,7 +31,7 @@ async function postAnnotations(arg: PostAnnotationsArg): Promise<void> {
     annotations.length,
     conclusion,
   )
-  await kit.postCheckRun({
+  const resp = await kit.postCheckRun({
     githubToken,
     name: 'Bandit',
     conclusion,
@@ -39,6 +39,7 @@ async function postAnnotations(arg: PostAnnotationsArg): Promise<void> {
     annotations,
     text: codeBlock(text),
   })
+  console.log('FIXME: resp', resp)
 }
 
 async function run(): Promise<void> {
