@@ -32,7 +32,8 @@ jobs:
       - name: Install deps
         run: pip install bandit
 
-      - uses: ./
+      - name: Run action
+        uses: ./
         with:
           paths: __tests__/assets/guinea_pig.py
           github-token: ${{ secrets.GITHUB_TOKEN }}
