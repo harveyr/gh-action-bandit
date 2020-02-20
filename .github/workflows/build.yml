@@ -4,30 +4,42 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - run: npm ci
+      - run: npm ci
 
-    - run: npm run build
+      - run: npm run build
 
-    - name: Prettier
-      uses: harveyr/gh-action-prettier@releases/v1
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        patterns: src/**.ts
+      - name: Prettier
+        uses: harveyr/gh-action-prettier@releases/v1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          patterns: src/**.ts
 
-    - name: ESLint
-      run: npx eslint src/**/**.ts __tests__/**/**.ts
+      - name: ESLint
+        run: npx eslint src/**/**.ts __tests__/**/**.ts
 
-    - run: npm test
+      - run: npm test
 
-    # zeit is a documented alternative to publishing node_modules:
-    # https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-a-javascript-action
-    - run: npm run dist
+      # zeit is a documented alternative to publishing node_modules:
+      # https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-a-javascript-action
+      - run: npm run dist
 
-    - uses: ./
+      - uses: actions/setup-python@v1
+        with:
+          python-version: '3.7'
 
-    - uses: harveyr/gh-action-publish@releases/v0
-      with:
-        dirs: dist
-      if: contains(github.ref, 'refs/heads/versions/' )
+      - name: Install deps
+        run: pip install bandit
+
+      - name: Run action
+        uses: ./
+        with:
+          paths: __tests__/assets/guinea_pig.py
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+      - uses: harveyr/gh-action-publish@releases/v0
+        with:
+          dirs: dist
+        if: contains(github.ref, 'refs/heads/versions/' )

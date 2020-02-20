@@ -1,10 +1,18 @@
-name: Your name here
-description: Your description here
-author: Your name or organization here
+name: Bandit
+description: Github Action for the Python Bandit tool
+author: Harvey Rogers
 inputs:
-  myInput:
-    description: input description here
-    default: default value if applicable
+  paths:
+    description: the path(s) to run against
+    required: true
+  config-file:
+    description: bandit config file
+    required: false
+  bandit-path:
+    description: path to bandit executable
+    default: bandit
+  github-token:
+    description: GitHub token for posting annotations
     required: false
 runs:
   using: node12
