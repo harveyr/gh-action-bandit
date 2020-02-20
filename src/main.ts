@@ -1,8 +1,7 @@
 import * as core from '@actions/core'
 import * as kit from '@harveyr/github-actions-kit'
-import { Issue, IssueCounts, Report } from './types'
-
-import { countIssues } from './bandit'
+import { countIssues, runBandit } from './bandit'
+import { Issue, IssueCounts } from './types'
 
 interface Conclusion {
   conclusion: kit.CheckRunConclusion
@@ -69,11 +68,9 @@ function getAnnotationLevel(issue: Issue): kit.AnnotationLevel {
     }
     return 'warning'
   }
-  if (issue_severity === 'LOW') {
-    if (issue_confidence === 'HIGH') {
-      return 'warning'
-    }
-  }
+
+  // The low-severity issues I've seen are more of "FYI"-style notices than
+  // danger warnings. Leaving them as "notice" for now.
 
   // Catch-all
   return 'notice'
@@ -81,6 +78,7 @@ function getAnnotationLevel(issue: Issue): kit.AnnotationLevel {
 
 interface PostAnnotationsArg {
   issues: Issue[]
+  text: string
   githubToken: string
 }
 
@@ -138,24 +136,13 @@ async function run(): Promise<void> {
   const configFile = kit.getInputSafe('config-file', { required: false })
   const githubToken = kit.getInputSafe('github-token', { required: false })
 
-  let args = ['--quiet', '--format', 'json']
-  if (configFile) {
-    args = args.concat(['-c', configFile])
-  }
-  args = args.concat(paths)
-
-  const { stdout, stderr } = await kit.execAndCapture(banditPath, args, {
-    failOnStdErr: false,
+  const result = await runBandit({
+    banditPath,
+    paths,
+    format: 'json',
+    configFile,
   })
-
-  let report: Report | undefined
-  try {
-    report = JSON.parse(stdout + stderr)
-  } catch (err) {
-    console.error(`Failed to parse output: ${stdout}`)
-    core.setFailed('Failed to parse output')
-    return
-  }
+  const { report } = result
 
   const errors = report?.errors || []
   if (errors.length) {
@@ -166,7 +153,19 @@ async function run(): Promise<void> {
   const issues = report?.results || []
   if (issues.length) {
     if (githubToken) {
-      await postAnnotations({ githubToken, issues })
+      // Run it again with a more human-readable format. TODO: consider just
+      // using yaml instead of json.
+      const txtResult = await runBandit({
+        banditPath,
+        paths,
+        format: 'txt',
+        configFile,
+      })
+      await postAnnotations({
+        githubToken,
+        issues,
+        text: txtResult.stderr + txtResult.stdout,
+      })
     } else {
       core.warning('Not posting annotations because no GitHub token provided')
     }
