@@ -108,6 +108,11 @@ async function postAnnotations(arg: PostAnnotationsArg): Promise<void> {
     }
   })
 
+  console.log(
+    'Posting %s annotations with conclusion "%s"',
+    annotations.length,
+    conclusion,
+  )
   await kit.postCheckRun({
     githubToken,
     name: 'Bandit',
